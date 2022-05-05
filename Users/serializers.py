@@ -3,4 +3,4 @@ from .models import MainUser
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model=MainUser
-        fields='__all__'
+        exclude=['password']

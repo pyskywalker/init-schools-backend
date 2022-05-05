@@ -56,7 +56,7 @@ class MainUser(AbstractUser,PermissionsMixin):
     is_superuser=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
-    user_roles=models.ManyToManyField(UserRole)
+    user_roles=models.ManyToManyField(UserRole,null=True)
     objects=UserManager()
     USERNAME_FIELD='username'
     REQUIRED_FIELDS = ['first_name', 'last_name']
