@@ -31,6 +31,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'phonenumber_field',
+    'SMS',
     'Users',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -131,3 +133,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'Users.MainUser'
+
+PHONENUMBER_DB_FORMAT="NATIONAL"
+PHONENUMBER_DEFAULT_REGION="TZ"

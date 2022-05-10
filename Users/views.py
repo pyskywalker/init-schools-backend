@@ -51,10 +51,10 @@ class ChangePassword(APIView):
         u.save()
 
 class LoginCustom(APIView):
-    def post(request,*args,**kwargs):
+    permission_classes=[AllowAny,]
+    def post(self,request):
         username=request.data['username']
         password=request.data['password']
-        data={}
         try:
             user=MainUser.objects.get(username=username)
         except BaseException as e:
@@ -71,7 +71,6 @@ class LoginCustom(APIView):
             if user.is_active:
                 print(request.user)
                 login(request,user)
-
                 return Response(
                     {
                     'token': token.key,

@@ -6,7 +6,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
 from django.core.exceptions import ValidationError
 
-from .models import MainUser
+from .models import Contacts, MainUser,Permissions,UserRole,Location
 # Register your models here.
 
 class UserCreationForm(forms.ModelForm):
@@ -35,7 +35,7 @@ class UserChangeForm(forms.ModelForm):
     password=ReadOnlyPasswordHashField()
     class Meta:
         model=MainUser
-        fields = ('username', 'password','first_name','last_name','age','gender', 'date_of_birth', 'is_active','is_staff', 'is_admin')
+        fields = ('username', 'password','first_name','last_name','gender', 'date_of_birth', 'is_active','is_staff', 'is_admin')
 
 class UserAdmin(BaseUserAdmin):
     form=UserChangeForm
@@ -59,5 +59,8 @@ class UserAdmin(BaseUserAdmin):
     ordering = ('username',)
     filter_horizontal=()
 
-
+admin.site.unregister(Group)
 admin.site.register(MainUser,UserAdmin)
+models=[Permissions,UserRole,Location,Contacts]
+for model in models:
+    admin.site.register(model)
