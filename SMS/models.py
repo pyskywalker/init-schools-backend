@@ -2,6 +2,7 @@ from django.db import models
 from Users.models import MainUser,Location,Contacts
 import datetime
 from phonenumber_field.modelfields import PhoneNumberField
+from django.utils import timezone
 
 # Create your models here.
 
@@ -29,21 +30,36 @@ class NextOfKin(models.Model):
     contacts=models.ManyToManyField(Contacts)
     is_active=models.BooleanField(default=True)
 
-
+def yearpublished(date):
+        return date.pub_date.strftime('%Y')
+def f(instance, filename):
+    ext = filename.split('.')[-1]
+    if instance.pk:
+        return '{}.{}'.format(instance.pk, ext)
+    else:
+        pass
 
 class Student(models.Model):
-    def userDirectoryPath(self):
-        return f'students/{self.id}/profile_image'
+    def userDirectoryPath(instance,filename):
+        ext = filename.split('.')[-1]
+        date_string=str(timezone.now())
+        st=date_string.replace(r'/','-').replace(r" ","-").replace(r":","-").replace(r"+","-")
+        st=instance.registration_number
+
+        st=st+"."+ext
+        return f'students/profile_image/{st}'
     user=models.OneToOneField(MainUser,primary_key=True,on_delete=models.CASCADE)
-    profile_image=models.ImageField(upload_to=userDirectoryPath)
     registration_number=models.CharField(max_length=20,unique=True)
+    
+    profile_image=models.ImageField(upload_to=userDirectoryPath)
     registration_date=models.DateField(max_length=20,auto_now_add=True)
     year_of_Study=models.DateField()
     branch=models.ForeignKey(School,on_delete=models.SET_NULL,null=True)
     course=models.ForeignKey(Course,on_delete=models.PROTECT)
     next_of_kin=models.ForeignKey(NextOfKin,on_delete=models.SET_NULL,null=True)
     is_active=models.BooleanField(default=True)
-
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
 
 
 class Subjects(models.Model):

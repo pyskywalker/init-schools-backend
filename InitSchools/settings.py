@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 from pathlib import Path
+import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -25,12 +26,15 @@ SECRET_KEY = 'django-insecure-whm$7036f+j4v4muu!c7=+a(#rk!e)#r6bo9k0+7sbfnn_(0oh
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'corsheaders',
+    "Authenticator",
+    "rest_framework",
     'phonenumber_field',
     'SMS',
     'Users',
@@ -39,12 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles','rest_framework.authtoken',
+    'django.contrib.staticfiles',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -102,14 +107,23 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+########RESTFRAMEWORK###############
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-               'rest_framework.authentication.TokenAuthentication',
+               "Authenticator.authentication.ExpiringTokenAuthentication", 
+               "rest_framework.authentication.SessionAuthentication",
     ),
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
-    ]
+    ],
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE':25
 }
+AUTH_USER_MODEL="Authenticator.MainUser"
+REST_AUTH_TOKEN_MODEL = "Authenticator.models.Token"
+REST_AUTH_TOKEN_CREATOR = "Authenticator.utils.custom_create_token"
+TOKEN_TTL = datetime.timedelta(minutes=1)
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
@@ -136,3 +150,7 @@ AUTH_USER_MODEL = 'Users.MainUser'
 
 PHONENUMBER_DB_FORMAT="NATIONAL"
 PHONENUMBER_DEFAULT_REGION="TZ"
+CORS_ALLOWED_ORIGINS = [
+    'http://localhost:3000',
+     'http://localhost:3001',
+]

@@ -2,7 +2,5 @@ from .views import *
 from django.urls import path
 urlpatterns = [
     path('userlist',UserList.as_view(),name="users"),
-    path('login/',LoginAPI.as_view(),name="login"),
-    path('login-test/',LoginCustom.as_view(),name="login-test"),
-
-]
+    path('user-role-list',UserRolesAPI.as_view(),name="user-roles"),
+    ]
