@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import generics
 from .models import *
-from .serializers import StudentSerializer
+from .serializers import CourseSerializer, InstructorSerializer, StudentSerializer,SingleInstructorSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
@@ -11,6 +11,34 @@ class StudentAPI(generics.ListCreateAPIView):
     queryset=Student.objects.all()
     serializer_class=StudentSerializer
     pagination_class=PageNumberPagination
+
+class InstructorAPI(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=Instructor.objects.all()
+    serializer_class=InstructorSerializer
+    pagination_class=PageNumberPagination
+
+class CourseAPI(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=Course.objects.all()
+    serializer_class=CourseSerializer
+
+class SingleInstructorAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=Instructor.objects.all()
+    serializer_class=SingleInstructorSerializer
+    lookup_url_kwarg="id"
+
+class SingleStudentAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=Student.objects.all()
+    lookup_url_kwarg="id"
+
+class SingleCourseAPI(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=Course.objects.all()
+    lookup_url_kwarg="id"
+    serializer_class=CourseSerializer
 
 
 ######################FUNCTION BASED VIEW PAGINATION LOGIC##############################

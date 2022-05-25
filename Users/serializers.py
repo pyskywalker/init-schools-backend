@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import MainUser,UserRole,Permissions
+from .models import Contacts, MainUser,UserRole,Permissions
 
 class PermissionSerializers(serializers.ModelSerializer):
     class Meta:
@@ -10,6 +10,10 @@ class UserRoleSerializer(serializers.ModelSerializer):
     permission=PermissionSerializers(many=True)
     class Meta:
         model=UserRole
+        fields="__all__"
+class ContactsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Contacts
         fields="__all__"
 
 class UserSerializer(serializers.ModelSerializer):

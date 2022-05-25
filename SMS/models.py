@@ -1,3 +1,5 @@
+from http.client import PROCESSING
+from platform import mac_ver
 from django.db import models
 from Users.models import MainUser,Location,Contacts
 import datetime
@@ -14,13 +16,26 @@ class School(models.Model):
     contacts=models.ForeignKey(Contacts,on_delete=models.SET_NULL,null=True)
     is_active=models.BooleanField(default=True)
 
+
+class Subjects(models.Model):
+    subject_code=models.CharField(max_length=10)
+    subject_name=models.CharField(max_length=50)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+    is_active=models.BooleanField(default=True)
+    def __str__(self):
+       return f"{self.subject_code}: {self.subject_name}"
+
 class Course(models.Model):
     course_code=models.CharField(max_length=10)
     course_name=models.CharField(max_length=100)
     school_year=models.IntegerField()
+    subjects=models.ManyToManyField(Subjects,related_name="course_subjects")
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
     is_active=models.BooleanField(default=True)
+    def __str__(self):
+        return f"{self.course_code} : {self.course_name}"
 
 class NextOfKin(models.Model):
     first_name=models.CharField(max_length=100)
@@ -62,15 +77,6 @@ class Student(models.Model):
         return f"{self.user.first_name} {self.user.last_name}"
 
 
-class Subjects(models.Model):
-    subject_code=models.CharField(max_length=10)
-    subject_name=models.CharField(max_length=50)
-    course=models.ManyToManyField(Course)
-    created_at=models.DateTimeField(auto_now_add=True)
-    modified_at=models.DateTimeField(auto_now=True)
-    is_active=models.BooleanField(default=True)
-
- 
 class Instructor(models.Model):
     user_id=models.OneToOneField(MainUser,primary_key=True,on_delete=models.CASCADE)
     subjects=models.ManyToManyField(Subjects)
@@ -79,6 +85,8 @@ class Instructor(models.Model):
     branch=models.ManyToManyField(School)
     next_of_kin=models.ForeignKey(NextOfKin,on_delete=models.SET_NULL,null=True)
     is_active=models.BooleanField(default=True)
+    def __str__(self):
+       return f"{self.user_id.username}: {self.user_id.first_name} {self.user_id.last_name}"
 
     
 
@@ -110,3 +118,52 @@ class Schedule(models.Model):
 
 
     
+class Assignments(models.Model):
+    assignment_name=models.CharField(max_length=200)
+    assingment_file=models.FileField()
+    subject=models.ForeignKey(Subjects,on_delete=models.PROTECT)
+    assigned_by=models.ForeignKey(Instructor,on_delete=models.PROTECT)
+    due_date=models.DateField()
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+    is_active=models.BooleanField(default=True)
+    created_by=models.ForeignKey(MainUser,on_delete=models.PROTECT)
+    def save(self,*args,**kwargs):
+       super(Assignments, self).save(*args, **kwargs)
+       students=Student.objects.filter(course__subjects=self.subject)
+       for student in students:
+          student_assignment= StudentsAssignments.objects.create(student=student,assignment=self)
+          student_assignment.save()
+
+
+class StudentsAssignments(models.Model):
+    assignment=models.ForeignKey(Assignments,on_delete=models.PROTECT)
+    student=models.ForeignKey(Student,on_delete=models.PROTECT)
+    assignment_done=models.FileField(null=True)
+    is_completed=models.BooleanField(default=False)
+    submitted_on=models.DateTimeField(null=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+    
+
+class CourseItemType(models.Model):
+    type_name=models.CharField(max_length=100)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+class CourseOutline(models.Model):
+    subject=models.ForeignKey(Subjects,on_delete=models.PROTECT)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+    
+
+class CourseItems(models.Model):
+    item_name=models.CharField(max_length=100)
+    course_outline=models.ForeignKey(CourseOutline,on_delete=models.PROTECT)
+    created_by=models.ForeignKey(MainUser,on_delete=models.PROTECT)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
+    
+
+
+
+

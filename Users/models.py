@@ -11,10 +11,14 @@ class Location(models.Model):
     city=models.CharField(max_length=100)
     region=models.CharField(max_length=100)
     country=models.CharField(max_length=100,default="Tanzania",null=True)
+    def __str__(self):
+        return f"{self.city} {self.region} {self.country}"
 
 class Contacts(models.Model):
     email=models.EmailField(null=True)
     phone=PhoneNumberField(null=True)
+    def __str__(self):
+        return f"{self.email}"
 
 class UserManager(BaseUserManager):
         def create_user(self,username,first_name,last_name,password=None):
@@ -38,11 +42,15 @@ class Permissions(models.Model):
     permission_name=models.CharField(max_length=200)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"{self.permission_name}"
 class UserRole(models.Model):
     role_name=models.CharField(max_length=200)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
     permission=models.ManyToManyField(Permissions,related_name="rolePermission")
+    def __str__(self):
+        return f"{self.role_name}"
 
 class MainUser(AbstractUser,PermissionsMixin):
     def designation(self):
@@ -62,6 +70,7 @@ class MainUser(AbstractUser,PermissionsMixin):
     date_of_birth=models.DateField(null=True,blank=True)
     is_staff=models.BooleanField(default=False)
     is_student=models.BooleanField(default=False)
+    is_instructor=models.BooleanField(default=False)
     contacts=models.ForeignKey(Contacts,on_delete=models.SET_NULL,null=True)
     is_admin=models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)

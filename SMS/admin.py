@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import *
 # Register your models here.
-models=[Student,Schedule,Instructor,NextOfKin,Course,Subjects,School,RoomType,Rooms]
+models=[Student,Schedule,Instructor,NextOfKin,Course,Subjects,School,RoomType,Rooms,Assignments,StudentsAssignments]
 
 for model in models:
     admin.site.register(model)

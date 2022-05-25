@@ -46,13 +46,13 @@ class UserAdmin(BaseUserAdmin):
     fieldsets=(
         (None,{'fields':('username','password','first_name','last_name')}),
         ('Personal info', {'fields': ('gender', 'date_of_birth')}),
-        ('Permissions',{'fields':('is_admin','is_staff','is_student')}),
+        ('Permissions',{'fields':('is_admin','is_staff','is_instructor','is_student','user_roles')}),
         )
 
     add_fieldsets = (
         (None, {
             'classes': ('wide',),
-            'fields': ('username', 'first_name','last_name', 'password1', 'password2'),
+            'fields': ('username', 'first_name','last_name', 'password1', 'password2','user_roles'),
         }),
     )
     search_fields = ('username',)

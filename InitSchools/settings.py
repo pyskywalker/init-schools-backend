@@ -123,7 +123,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL="Authenticator.MainUser"
 REST_AUTH_TOKEN_MODEL = "Authenticator.models.Token"
 REST_AUTH_TOKEN_CREATOR = "Authenticator.utils.custom_create_token"
-TOKEN_TTL = datetime.timedelta(minutes=1)
+TOKEN_TTL = datetime.timedelta(days=1)
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
 
