@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import datetime
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -117,8 +118,8 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE':25
+    'DEFAULT_PAGINATION_CLASS': 'SMS.pagination.CustomPagination',
+    'PAGE_SIZE':15
 }
 AUTH_USER_MODEL="Authenticator.MainUser"
 REST_AUTH_TOKEN_MODEL = "Authenticator.models.Token"
@@ -154,3 +155,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
      'http://localhost:3001',
 ]
+
+#############Media##########################
+MEDIA_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'mediafiles')
+MEDIA_URL = '/media/'

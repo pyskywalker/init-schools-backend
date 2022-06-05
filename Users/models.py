@@ -8,9 +8,12 @@ from phonenumber_field.modelfields import PhoneNumberField
 import datetime
 
 class Location(models.Model):
+    village=models.CharField(max_length=100,null=True,blank=True)
+    ward=models.CharField(max_length=100,null=True,blank=True)
+    district=models.CharField(max_length=100,null=True,blank=True)
     city=models.CharField(max_length=100)
     region=models.CharField(max_length=100)
-    country=models.CharField(max_length=100,default="Tanzania",null=True)
+    country=models.CharField(max_length=100,default="United Republic Of Tanzania",null=True)
     def __str__(self):
         return f"{self.city} {self.region} {self.country}"
 
@@ -77,6 +80,7 @@ class MainUser(AbstractUser,PermissionsMixin):
     is_superuser=models.BooleanField(default=False)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
+    nationality=models.CharField(default="United Republic of Tanzania",max_length=100,null=True )
     user_roles=models.ManyToManyField(UserRole)
     objects=UserManager()
     USERNAME_FIELD='username'

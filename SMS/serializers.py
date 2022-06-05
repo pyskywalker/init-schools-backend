@@ -6,7 +6,7 @@ from Users.serializers import UserSerializer,ContactsSerializer
 
     
 class NextOfKinSerializer(serializers.ModelSerializer):
-    contacts=ContactsSerializer(many=True)
+    contacts=ContactsSerializer(many=True,read_only=True)
     class Meta:
         model=NextOfKin
         fields="__all__"
@@ -19,6 +19,11 @@ class BranchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=School
+        fields="__all__"
+class SpecializationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model=Specializations
         fields="__all__"
 
 class SubjectSerializer(serializers.ModelSerializer):
@@ -33,11 +38,30 @@ class CourseSerializer(serializers.ModelSerializer):
         model=Course
         fields="__all__"
 
+class CourseOutlineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CourseOutline
+        fields="__all__"
+
+class CourseOutlineTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CourseItemType
+        fields="__all__"
+
+class CourseOutlineItemSerializer(serializers.ModelSerializer):
+    course_outline=CourseOutlineSerializer(read_only=True)
+    course_item_type=CourseOutlineTypeSerializer(read_only=True)
+    created_by=UserSerializer(read_only=True)
+    class Meta:
+        model=CourseItems
+        fields="__all__"
+
 class SingleInstructorSerializer(serializers.ModelSerializer):
-    user_id=UserSerializer()
-    subjects=SubjectSerializer(many=True)
-    next_of_kin=NextOfKinSerializer()
-    branch=BranchSerializer(many=True)
+    user_id=UserSerializer(read_only=True)
+    specialization=SpecializationSerializer(read_only=True)
+    subjects=SubjectSerializer(many=True,read_only=True)
+    next_of_kin=NextOfKinSerializer(read_only=True)
+    branch=BranchSerializer(many=True,read_only=True)
     class Meta:
         model=Instructor
         fields="__all__"

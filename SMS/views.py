@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from rest_framework import generics
+from rest_framework.views import Response
 from .models import *
-from .serializers import CourseSerializer, InstructorSerializer, StudentSerializer,SingleInstructorSerializer
+from .serializers import CourseSerializer, InstructorSerializer, StudentSerializer,SingleInstructorSerializer,CourseOutlineItemSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 
@@ -23,6 +24,24 @@ class CourseAPI(generics.ListCreateAPIView):
     queryset=Course.objects.all()
     serializer_class=CourseSerializer
 
+class CourseOutlineAPI(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=CourseOutline.objects.all()
+    serializer_class=CourseSerializer
+
+class CourseOutlineItemTypeAPI(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    queryset=CourseOutline.objects.all()
+    serializer_class=CourseSerializer
+
+class CourseOutlineItemsAPI(generics.ListCreateAPIView):
+    permission_classes=[IsAuthenticated]
+    serializer_class=CourseOutlineItemSerializer
+    def get(self,request,id):
+        courses= CourseItems.objects.filter(course_outline=id)
+        serializer=CourseOutlineItemSerializer(courses,many=True)
+        return Response(serializer.data)
+    
 class SingleInstructorAPI(generics.RetrieveUpdateDestroyAPIView):
     permission_classes=[IsAuthenticated]
     queryset=Instructor.objects.all()

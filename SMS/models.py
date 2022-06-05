@@ -1,10 +1,14 @@
+from email.policy import default
 from http.client import PROCESSING
 from platform import mac_ver
+from re import T
 from django.db import models
 from Users.models import MainUser,Location,Contacts
 import datetime
 from phonenumber_field.modelfields import PhoneNumberField
 from django.utils import timezone
+from rest_framework.parsers import MultiPartParser, FormParser
+import random
 
 # Create your models here.
 
@@ -66,7 +70,7 @@ class Student(models.Model):
     user=models.OneToOneField(MainUser,primary_key=True,on_delete=models.CASCADE)
     registration_number=models.CharField(max_length=20,unique=True)
     
-    profile_image=models.ImageField(upload_to=userDirectoryPath)
+    profile_image=models.ImageField(upload_to=userDirectoryPath,null=True,blank=True)
     registration_date=models.DateField(max_length=20,auto_now_add=True)
     year_of_Study=models.DateField()
     branch=models.ForeignKey(School,on_delete=models.SET_NULL,null=True)
@@ -75,16 +79,34 @@ class Student(models.Model):
     is_active=models.BooleanField(default=True)
     def __str__(self):
         return f"{self.user.first_name} {self.user.last_name}"
-
+class Specializations(models.Model):
+    specialization_name=models.CharField(max_length=100)
+    description=models.TextField(null=True,blank=True)
+    created_by=models.ForeignKey(MainUser,on_delete=models.SET_NULL,null=True)
+    created_at=models.DateTimeField(auto_now_add=True)
+    modified_at=models.DateTimeField(auto_now=True)
 
 class Instructor(models.Model):
+    def random_UUID_Generator():
+        date_string=str(timezone.now())
+        st=date_string.replace(r'/','-').replace(r" ","-").replace(r":","-").replace(r"+","-")
+        return f'{st}'
+    def userDirectoryPath(instance,filename):
+        ext = filename.split('.')[-1]
+        st=instance.teacher_UUID
+        st=st+"."+ext
+        return f'teacher/profile_image/{st}'
     user_id=models.OneToOneField(MainUser,primary_key=True,on_delete=models.CASCADE)
     subjects=models.ManyToManyField(Subjects)
+    profile_image=models.ImageField(upload_to=userDirectoryPath,null=True,blank=True)
+    teacher_UUID=models.CharField(default=random_UUID_Generator,editable=False,blank=True,max_length=100,null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
     branch=models.ManyToManyField(School)
     next_of_kin=models.ForeignKey(NextOfKin,on_delete=models.SET_NULL,null=True)
     is_active=models.BooleanField(default=True)
+    location=models.ForeignKey(Location,on_delete=models.SET_NULL,null=True)
+    specialization=models.ForeignKey(Specializations,on_delete=models.SET_NULL,null=True)
     def __str__(self):
        return f"{self.user_id.username}: {self.user_id.first_name} {self.user_id.last_name}"
 
@@ -150,19 +172,27 @@ class CourseItemType(models.Model):
     type_name=models.CharField(max_length=100)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"{self.type_name}"
+
 class CourseOutline(models.Model):
-    subject=models.ForeignKey(Subjects,on_delete=models.PROTECT)
+    subject=models.OneToOneField(Subjects,on_delete=models.PROTECT)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
+    def __str__(self):
+        return f"{self.subject.subject_name}"
     
 
 class CourseItems(models.Model):
     item_name=models.CharField(max_length=100)
     course_outline=models.ForeignKey(CourseOutline,on_delete=models.PROTECT)
+    course_item_type=models.ForeignKey(CourseItemType,on_delete=models.PROTECT)
+    percentage=models.IntegerField()
     created_by=models.ForeignKey(MainUser,on_delete=models.PROTECT)
     created_at=models.DateTimeField(auto_now_add=True)
     modified_at=models.DateTimeField(auto_now=True)
-    
+    def __str__(self):
+        return f"{self.item_name} ({self.course_outline.subject.subject_name})"
 
 
 
